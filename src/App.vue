@@ -6,18 +6,21 @@
   months
   days
   add-task
+  list-of-tasks
 </template>
 
 <script>
 import Months from "./components/Months";
 import Days from "./components/Days";
 import addNewTask from "./components/addNewTask";
+import listOfTasks from "./components/ListOfTasks";
 
 export default {
   components: {
     months: Months,
     days: Days,
-    "add-task": addNewTask
+    "add-task": addNewTask,
+    "list-of-tasks": listOfTasks
   },
   name: "app",
   data() {
@@ -63,6 +66,16 @@ body {
   transition: all 0.3s;
   &.dark {
     background: #1c313a;
+    color: lighten(@green, 35%);
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    textarea {
+      background: lighten(#1c313a, 10%);
+      &::placeholder {
+        color: lighten(@green, 30%);
+      }
+    }
   }
 }
 .theme-switcher {

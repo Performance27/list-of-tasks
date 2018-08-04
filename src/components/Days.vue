@@ -1,12 +1,17 @@
 <template lang="pug">
 ul.days
-  li.days__item(v-for="n in 30" data-month="Январь") {{ n }}
+  li.days__item(v-for="(n, index) in monthInfo.daysInMonth" data-month="Январь" v-bind:data-start="monthInfo.dayStart" v-bind:style="index == 0 ? 'grid-column: ' + monthInfo.dayStart + ';' : ''") {{ n }}
 </template>
 
 <script>
 export default {
   data() {
-    return {};
+    return {
+      monthInfo: {
+        dayStart: 5,
+        daysInMonth: 31
+      }
+    };
   }
 };
 </script>
