@@ -1,6 +1,6 @@
 <template lang="pug">
 ul.days
-  li.days__item(v-for="(n, index) in monthInfo.daysInMonth" data-month="Январь" v-bind:data-start="monthInfo.dayStart" v-bind:style="index == 0 ? 'grid-column: ' + monthInfo.dayStart + ';' : ''") {{ n }}
+  li.days__item(v-for="(n, index) in monthInfo.daysInMonth" v-bind:data-month="monthInfo.monthName" v-bind:data-start="dayStart" v-bind:style="index == 0 ? 'grid-column: ' + dayStart + ';' : ''" v-bind:class="{'days__item_weekend' : weekend(index) == 6 || weekend(index) == 0}" v-bind:title="currentDay(index)") {{ n }}
 </template>
 
 <script>
@@ -8,10 +8,55 @@ export default {
   data() {
     return {
       monthInfo: {
-        dayStart: 5,
-        daysInMonth: 31
+        dayStart: null,
+        daysInMonth: 31,
+        year: 2018,
+        monthNumber: 7,
+        monthName: "Август"
       }
     };
+  },
+  computed: {
+    dayStart: function() {
+      var dayStart = new Date(
+        this.monthInfo.year,
+        this.monthInfo.monthNumber,
+        1,
+        0,
+        0,
+        0,
+        0
+      );
+      return dayStart.getDay();
+    }
+  },
+  methods: {
+    weekend: function(index) {
+      var days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+      var dayStart = new Date(
+        this.monthInfo.year,
+        this.monthInfo.monthNumber,
+        index + 1,
+        0,
+        0,
+        0,
+        0
+      );
+      return dayStart.getDay();
+    },
+    currentDay: function(index) {
+      var days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+      var dayStart = new Date(
+        this.monthInfo.year,
+        this.monthInfo.monthNumber,
+        index + 1,
+        0,
+        0,
+        0,
+        0
+      );
+      return days[dayStart.getDay()];
+    }
   }
 };
 </script>
@@ -38,6 +83,16 @@ export default {
       top: 3px;
       font-size: 8px;
       color: fade(lighten(@green, 10%), 80%);
+    }
+    &:before {
+      content: attr(title);
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      font-size: 10px;
+    }
+    &_weekend {
+      background: fade(red, 20%);
     }
   }
 }
