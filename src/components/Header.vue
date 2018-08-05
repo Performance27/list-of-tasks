@@ -6,6 +6,10 @@ header
         router-link.app-nav__link(to="/" exact) Главная
       li.app-nav__item
         router-link.app-nav__link(to="/add-task" exact) Добавить задачу
+      li.app-nav__item
+        router-link.app-nav__link(to="/signup" exact) Зарегистрироватаься
+      li.app-nav__item
+        router-link.app-nav__link(to="/signin" exact) Войти
 </template>
 
 <script>

@@ -1,7 +1,8 @@
 <template lang="pug">
 div
+  h1(style="text-align: center;") {{ monthName | capitalize}}
   ul.days
-    li.days__item(v-for="(n, index) in monthDays" v-bind:data-month="monthName" v-bind:data-start="dayStart" v-bind:style="index == 0 ? 'grid-column: ' + dayStart + ';' : ''" v-bind:class="{'days__item_weekend' : weekend(index) == 6 || weekend(index) == 0}" v-bind:title="currentDay(index)") 
+    li.days__item(v-for="(n, index) in monthDays" v-bind:data-start="dayStart" v-bind:style="index == 0 ? 'grid-column: ' + dayStart + ';' : ''" v-bind:class="[{'days__item_weekend' : weekend(index) == 6 || weekend(index) == 0}, {'days__item_current' : index == currentDate && monthInfo.monthNumber == currentMonth}]" v-bind:title="dayOfWeek(index)") 
       router-link.days__link(v-bind:to="'/month-' + (monthInfo.monthNumber + 1) +'/' + (index + 1)") {{ n }}
 </template>
 
@@ -16,7 +17,6 @@ export default {
     return {
       monthInfo: {
         dayStart: null,
-        daysInMonth: 31,
         year: 2018,
         monthNumber: this.$route.params.number - 1
       }
@@ -59,6 +59,14 @@ export default {
         0
       );
       return date.getDate();
+    },
+    currentDate: function() {
+      var now = new Date();
+      return now.getDate() - 1;
+    },
+    currentMonth: function() {
+      var now = new Date();
+      return now.getMonth();
     }
   },
   methods: {
@@ -75,7 +83,7 @@ export default {
       );
       return dayStart.getDay();
     },
-    currentDay: function(index) {
+    dayOfWeek: function(index) {
       var days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
       var dayStart = new Date(
         this.monthInfo.year,
@@ -127,6 +135,9 @@ export default {
     }
     &_weekend {
       background: fade(red, 20%);
+    }
+    &_current {
+      border: 2px solid @green;
     }
   }
 }
