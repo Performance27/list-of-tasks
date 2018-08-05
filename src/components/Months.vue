@@ -1,8 +1,10 @@
 <template lang="pug">
-.months
-  input.months__filter(type="text" v-model="search" placeholder="Месяц")
-  ul.months__list
-    li.months__item(v-for="month of filteredMonths") {{ month | capitalize}}
+div
+  .months
+    input.months__filter(type="text" v-model="search" placeholder="Месяц")
+    ul.months__list
+      li.months__item(v-for="(month, index) of filteredMonths") 
+        router-link(v-bind:to="'/month-' + (index + 1)" exact) {{ month | capitalize}}
 </template>
 
 <script>
@@ -53,35 +55,39 @@ export default {
     padding: 0;
     margin: 0;
     li {
-      text-align: center;
-      padding: 25px;
-      cursor: pointer;
-      border-radius: 4px;
-      border: 1px solid green;
-      color: green;
-      transition: all 0.2s ease-in-out;
-      box-shadow: 0 0 0 0 transparent;
-      font-size: 18px;
-      position: relative;
-      z-index: 2;
-      &:before {
-        content: "";
-        position: absolute;
-        z-index: -1;
+      a {
+        display: block;
+        text-align: center;
+        padding: 25px;
+        cursor: pointer;
         border-radius: 4px;
-        left: -1px;
-        top: -1px;
-        height: calc(100% + 2px);
-        width: 0;
+        border: 1px solid green;
+        color: green;
         transition: all 0.2s ease-in-out;
-        background: linear-gradient(to right, #bef67a, #5a9216);
-      }
-      &:hover {
-        color: #fff;
-        border-color: transparent;
-        box-shadow: 0 25px 25px -15px fade(darken(#5a9216, 20%), 50%);
+        box-shadow: 0 0 0 0 transparent;
+        font-size: 18px;
+        position: relative;
+        z-index: 2;
         &:before {
-          width: calc(100% + 1px);
+          content: "";
+          position: absolute;
+          z-index: -1;
+          border-radius: 4px;
+          left: -1px;
+          top: -1px;
+          height: calc(100% + 2px);
+          width: 0;
+          transition: all 0.2s ease-in-out;
+          background: linear-gradient(to right, #bef67a, #5a9216);
+        }
+        &:hover,
+        &.router-link-active {
+          color: #fff;
+          border-color: transparent;
+          box-shadow: 0 25px 25px -15px fade(darken(#5a9216, 20%), 50%);
+          &:before {
+            width: calc(100% + 1px);
+          }
         }
       }
     }

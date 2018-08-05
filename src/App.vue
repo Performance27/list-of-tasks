@@ -3,10 +3,8 @@
   .theme-switcher
     input.theme-switcher__input#theme-switcher(v-on:change="changeTheme" type="checkbox")
     label.theme-switcher__label(for="theme-switcher") Тема: {{lightTheme.enabled ? lightTheme.name : darkTheme.name}}
-  months
-  days
-  add-task
-  list-of-tasks
+  app-header
+  router-view
 </template>
 
 <script>
@@ -14,13 +12,15 @@ import Months from "./components/Months";
 import Days from "./components/Days";
 import addNewTask from "./components/addNewTask";
 import listOfTasks from "./components/ListOfTasks";
+import Header from "./components/Header";
 
 export default {
   components: {
     months: Months,
     days: Days,
     "add-task": addNewTask,
-    "list-of-tasks": listOfTasks
+    "list-of-tasks": listOfTasks,
+    "app-header": Header
   },
   name: "app",
   data() {
