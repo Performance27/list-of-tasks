@@ -1,16 +1,18 @@
-import * as firebase from 'firebase'
+import firebase from 'firebase'
 
 export default {
   state: {
     user: null
   },
   mutations: {
-    setUser (state, payload) {
+    setUser(state, payload) {
       state.user = payload
     }
   },
   actions: {
-    signUserUp ({commit}, payload) {
+    signUserUp({
+      commit
+    }, payload) {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
@@ -34,7 +36,9 @@ export default {
           }
         )
     },
-    signUserIn ({commit}, payload) {
+    signUserIn({
+      commit
+    }, payload) {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
@@ -58,7 +62,9 @@ export default {
           }
         )
     },
-    signUserInGoogle ({commit}) {
+    signUserInGoogle({
+      commit
+    }) {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
@@ -82,7 +88,9 @@ export default {
           }
         )
     },
-    signUserInFacebook ({commit}) {
+    signUserInFacebook({
+      commit
+    }) {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().signInWithPopup(new firebase.auth.FacebookAuthProvider())
@@ -106,7 +114,9 @@ export default {
           }
         )
     },
-    signUserInGithub ({commit}) {
+    signUserInGithub({
+      commit
+    }) {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().signInWithPopup(new firebase.auth.GithubAuthProvider())
@@ -130,7 +140,9 @@ export default {
           }
         )
     },
-    signUserInTwitter ({commit}) {
+    signUserInTwitter({
+      commit
+    }) {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().signInWithPopup(new firebase.auth.TwitterAuthProvider())
@@ -154,7 +166,9 @@ export default {
           }
         )
     },
-    autoSignIn ({commit}, payload) {
+    autoSignIn({
+      commit
+    }, payload) {
       commit('setUser', {
         id: payload.uid,
         name: payload.displayName,
@@ -162,31 +176,37 @@ export default {
         photoUrl: payload.photoURL
       })
     },
-    resetPasswordWithEmail ({ commit }, payload) {
-      const { email } = payload
+    resetPasswordWithEmail({
+      commit
+    }, payload) {
+      const {
+        email
+      } = payload
       commit('setLoading', true)
       firebase.auth().sendPasswordResetEmail(email)
-      .then(
-        () => {
-          commit('setLoading', false)
-          console.log('Email Sent')
-        }
-      )
-      .catch(
-        error => {
-          commit('setLoading', false)
-          commit('setError', error)
-          console.log(error)
-        }
-      )
+        .then(
+          () => {
+            commit('setLoading', false)
+            console.log('Email Sent')
+          }
+        )
+        .catch(
+          error => {
+            commit('setLoading', false)
+            commit('setError', error)
+            console.log(error)
+          }
+        )
     },
-    logout ({commit}) {
+    logout({
+      commit
+    }) {
       firebase.auth().signOut()
       commit('setUser', null)
     }
   },
   getters: {
-    user (state) {
+    user(state) {
       return state.user
     }
   }
