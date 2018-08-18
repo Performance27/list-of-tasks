@@ -11,10 +11,6 @@
       .tasks__filter-radios-item
         input#not-completed(type="radio" name="filter-tasks" @click="filterComplete = false")
         label(for="not-completed") Не выполненные
-    .tasks__filter-executors
-      select#executors(v-model="filterExecutor")
-        option(value='' selected) Все исполнители
-        option(v-for="executor of executors" v-bind:value="executor") {{ executor }}
     .tasks__filter-type
       .tasks__filter-type-item
         input#all-types(type="radio" value="" name="type" checked v-model="filterType")
@@ -22,7 +18,7 @@
       .tasks__filter-type-item(v-for="type of types") 
         input(v-bind:id="type.value" name="type" v-model="filterType" v-bind:value="type.value" type="radio")
         label(v-bind:for="type.value") {{type.name}}       
-  .tasks__item(v-bind:class="['task_' + task.type, {completed: task.complete}]" v-for="(task, index) of filterTasks")
+  .tasks__item(v-bind:class="['task_' + task.type, {completed: task.complete}]" v-for="task of getTasks")
       .tasks__item-row.tasks__item-description Описание задачи: {{ task.description }}
       .tasks__item-row.tasks__item-project Проект: {{ task.project }}
       .tasks__item-row.tasks__item-executor Выполняет: {{ task.executor }}
@@ -35,58 +31,11 @@
 </template>
 
 <script>
+import firebase from "firebase";
+
 export default {
   data() {
     return {
-      tasks: [
-        {
-          description: "Настройка целей яндекс метрика",
-          project: "Софткасс",
-          executor: "Алексей Завалин",
-          time: 2,
-          comment: null,
-          date: "31 июля 2018",
-          type: "plan",
-          complete: true
-        },
-        {
-          description: "Восстановление работы почты",
-          project: "Азия Бас",
-          executor: "Алексей Завалин",
-          time: 2,
-          comment: "Вирус",
-          date: "17 июля 2018",
-          type: "bug",
-          complete: false
-        },
-        {
-          description: "Доработка функционала корзины",
-          project: "Beezone",
-          executor: "Алексей Завалин",
-          time: 4,
-          date: "21 июля 2018",
-          type: "addit",
-          complete: false
-        },
-        {
-          description: "Перенос сайта на Drupal",
-          project: "Проект",
-          executor: "Алексей Завалин",
-          time: 1,
-          date: "21 июля 2018",
-          type: "delay",
-          complete: true
-        },
-        {
-          description: "Альфа: Мобильный адаптив",
-          project: "Альфа",
-          executor: "Никита Редин",
-          time: 3,
-          date: "21 июля 2018",
-          type: "plan",
-          complete: true
-        }
-      ],
       types: [
         {
           name: "План",
@@ -111,29 +60,44 @@ export default {
     };
   },
   computed: {
-    filterTasks: function() {
-      return this.tasks.filter(task => {
-        if (this.filterComplete != null) {
-          return (
-            task.complete == this.filterComplete &&
-            task.executor.match(this.filterExecutor) &&
-            task.type.match(this.filterType)
-          );
-        } else {
-          return (
-            task &&
-            task.executor.match(this.filterExecutor) &&
-            task.type.match(this.filterType)
-          );
-        }
-      });
-    },
-    executors: function() {
-      var executors = [];
-      this.tasks.forEach(function(item) {
-        executors.push(item.executor);
-      });
-      return unique(executors);
+    // filterTasks: function() {
+    //   return this.tasks.filter(task => {
+    //     if (this.filterComplete != null) {
+    //       return (
+    //         task.complete == this.filterComplete &&
+    //         task.executor.match(this.filterExecutor) &&
+    //         task.type.match(this.filterType)
+    //       );
+    //     } else {
+    //       return (
+    //         task &&
+    //         task.executor.match(this.filterExecutor) &&
+    //         task.type.match(this.filterType)
+    //       );
+    //     }
+    //   });
+    // },
+    // executors: function() {
+    //   var executors = [];
+    //   this.tasks.forEach(function(item) {
+    //     executors.push(item.executor);
+    //   });
+    //   return unique(executors);
+    // },
+    getTasks: function() {
+      var tasks = [];
+      firebase
+        .database()
+        .ref("tasks")
+        .limitToLast(10)
+        .once("value", function(snapshot) {
+          snapshot.forEach(function(childSnapshot) {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+            tasks.push(childData);
+          });
+        });
+      return tasks;
     }
   }
 };

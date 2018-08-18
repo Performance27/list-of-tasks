@@ -35,6 +35,24 @@ export default {
       }
     };
   },
+  computed: {
+    menuItems() {
+      let menuItems = [
+        { icon: "face", title: "Sign up", link: "/signup" },
+        { icon: "lock_open", title: "Sign in", link: "/signin" }
+      ];
+      if (this.userIsAuthenticated) {
+        menuItems = [{ icon: "person", title: "Profile", link: "/profile" }];
+      }
+      return menuItems;
+    },
+    userIsAuthenticated() {
+      return (
+        this.$store.getters.user !== null &&
+        this.$store.getters.user !== undefined
+      );
+    }
+  },
   methods: {
     changeTheme: function() {
       this.lightTheme.enabled = !this.lightTheme.enabled;

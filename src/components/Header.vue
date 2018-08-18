@@ -6,16 +6,40 @@ header
         router-link.app-nav__link(to="/" exact) Главная
       li.app-nav__item
         router-link.app-nav__link(to="/add-task" exact) Добавить задачу
-      li.app-nav__item
-        router-link.app-nav__link(to="/signup" exact) Зарегистрироватаься
-      li.app-nav__item
-        router-link.app-nav__link(to="/signin" exact) Войти
+      li.app-nav__item(v-for="item in menuItems" :key="item.title") 
+        router-link.app-nav__link(v-bind:to="item.link") {{ item.title }}
+      li.app-nav__item(v-if="userIsAuthenticated" @click="onLogout") 
+        a.app-nav__link() Выйти
 </template>
 
 <script>
 export default {
   data() {
     return {};
+  },
+  computed: {
+    menuItems() {
+      let menuItems = [
+        { icon: "face", title: "Зарегистрироваться", link: "/signup" },
+        { icon: "lock_open", title: "Войти", link: "/signin" }
+      ];
+      if (this.userIsAuthenticated) {
+        menuItems = [{ icon: "person", title: "Профиль", link: "/profile" }];
+      }
+      return menuItems;
+    },
+    userIsAuthenticated() {
+      return (
+        this.$store.getters.user !== null &&
+        this.$store.getters.user !== undefined
+      );
+    }
+  },
+  methods: {
+    onLogout() {
+      this.$store.dispatch("logout");
+      this.$router.push("/");
+    }
   }
 };
 </script>

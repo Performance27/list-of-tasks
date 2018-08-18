@@ -3,8 +3,9 @@ import App from './App.vue'
 import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
 import Routes from './routes'
-import
-store from './store'
+import {
+  store
+} from './store'
 import firebase from 'firebase'
 
 // Initialize Firebase

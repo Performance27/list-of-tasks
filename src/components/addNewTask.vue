@@ -1,60 +1,64 @@
 <template lang="pug">
-.add-task
-  form.add-task__form
-    .form-item
-      label(for="task-text") Описание задачи
-      textarea#task-text(v-model="task.description")
-    .form-item
-      label(for="task-project") Проект
-      input(type="text" v-model="task.project")
-    .form-item.radios
-      .radios__item(v-for="(value, index) in taskTypes" v-bind:key="index")
-        input(type="radio" v-bind:id="'task-type-' + index" name="task-type" v-bind:value="value.name" required)
-        label(v-bind:for="'task-type-' + index" v-bind:class="'radios__item_' + value.class" @click="comment = value.comment; task.type = value.class;") {{value.name}}
-    .form-item(v-if="comment")
-      label(for="comment") Комментарий
-      textarea#comment
-    .form-item
-      label(for="time") Время (ч)
-      input#time(type="text" v-model="task.time")
-    .form-item.radios
-      .radios__item
-        input(type="radio" value="Текущая" name="date" id="current" checked="checked")
-        label(for="current" class="radios__item_default" @click="own = false") Текущая
-      .radios__item
-        input(type="radio" value="Собственная" name="date" id="own")
-        label(for="own" class="radios__item_default" @click="own = true") Собственная
-    .form-item(v-if="own")
-      label(for="calendar") Дата
-      input.calendar#calendar(type="text" v-model="task.date")
-    .form-item
-      input#complete(v-model="task.complete" type="checkbox")
-      label(for="complete") Выполнена
-    .form-actions
-      button#add-task.btn.btn_submit(@click="addTask") Добавить задачу
-  .add-task__preview
-    .task(v-bind:class="'task_' + task.type")
-      .task__description {{ task.description }}
-      .task__project {{ task.project }}
-      .task__executor {{ task.executor }}
-      .task__time {{ task.time }}
-      .task__comment(v-if="task.comment != null") {{ task.comment }}
-      .task__date {{ task.date }}
+.container
+  .add-task(v-if="userIsAuthenticated")
+    form.add-task__form(@submit.prevent="addTask")
+      .form-item
+        label(for="task-text") Описание задачи
+        textarea#task-text(v-model="task.description")
+      .form-item
+        label(for="task-project") Проект
+        input(type="text" v-model="task.project")
+      .form-item.radios
+        .radios__item(v-for="(value, index) in taskTypes" v-bind:key="index")
+          input(type="radio" v-bind:id="'task-type-' + index" name="task-type" v-bind:value="value.name" required)
+          label(v-bind:for="'task-type-' + index" v-bind:class="'radios__item_' + value.class" @click="comment = value.comment; task.type = value.class;") {{value.name}}
+      .form-item(v-if="comment")
+        label(for="comment") Комментарий
+        textarea#comment(v-model="task.comment")
+      .form-item
+        label(for="time") Время (ч)
+        input#time(type="text" v-model="task.time")
+      .form-item.radios
+        .radios__item
+          input(type="radio" value="Текущая" name="date" id="current" checked="checked")
+          label(for="current" class="radios__item_default" @click="own = false") Текущая
+        .radios__item
+          input(type="radio" value="Собственная" name="date" id="own")
+          label(for="own" class="radios__item_default" @click="own = true") Собственная
+      .form-item(v-if="own")
+        label(for="calendar") Дата
+        input.calendar#calendar(type="date" v-model="task.date")
+      .form-item
+        input#complete(v-model="task.complete" type="checkbox")
+        label(for="complete") Выполнена
+      .form-actions
+        button#add-task.btn.btn_submit(@click="addTask") Добавить задачу
+    .add-task__preview
+      .task(v-bind:class="'task_' + task.type")
+        .task__description {{ task.description }}
+        .task__project {{ task.project }}
+        .task__executor {{task.executor}}
+        .task__time {{ task.time }}
+        .task__comment(v-if="task.comment != null") {{ task.comment }}
+        .task__date {{ task.date }}
+  .alert(v-else) Вы не вошли или не зарегистрированы
 </template>
 
 <script>
+import firebase from "firebase";
+
 export default {
   data() {
     return {
       task: {
         description: "",
         project: "",
-        comment: null,
-        time: null,
-        executor: "Леха",
+        comment: "",
+        time: "",
         complete: false,
         type: "",
-        date: null
+        date: "",
+        executor: ""
       },
       own: false,
       comment: false,
@@ -82,9 +86,51 @@ export default {
       ]
     };
   },
+  computed: {
+    user() {
+      this.$store.getters.user;
+    },
+    userIsAuthenticated() {
+      return (
+        this.$store.getters.user !== null &&
+        this.$store.getters.user !== undefined
+      );
+    }
+  },
   methods: {
     addTask: function() {
-      return;
+      var now = new Date();
+      var date;
+      if (!this.own) {
+        date = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
+      } else {
+        date = this.task.date;
+      }
+      var tasks = firebase.database().ref("tasks");
+      var newTask = tasks.push();
+      newTask.set({
+        description: this.task.description,
+        project: this.task.project,
+        comment: this.task.comment,
+        time: this.task.time,
+        complete: this.task.complete,
+        type: this.task.type,
+        date: date,
+        executor: this.$store.getters.user.name
+      });
+      // firebase
+      //   .database()
+      //   .ref("tasks/" + id * 1000)
+      //   .set({
+      //     description: this.task.description,
+      //     project: this.task.project,
+      //     comment: this.task.comment,
+      //     time: this.task.time,
+      //     complete: this.task.complete,
+      //     type: this.task.type,
+      //     date: date,
+      //     executor: this.$store.getters.user.name
+      //   });
     }
   }
 };
